@@ -139,7 +139,7 @@ export default function HomePage() {
 
                   <div className="mb-4">
                     <img
-                      src={post.image || "/placeholder.svg"}
+                      src={post.image}
                       alt={post.title}
                       className="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
                       onClick={() => {

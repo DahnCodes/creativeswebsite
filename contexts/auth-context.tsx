@@ -61,7 +61,7 @@ const initialPosts: Post[] = [
     userId: "2",
     title: "Minimalist Brand Identity",
     description: "Clean and modern brand identity design for a tech startup. Focused on simplicity and elegance.",
-    image: "/placeholder.svg?height=400&width=600",
+    image: "/picture.png?height=400&width=600",
     tags: ["branding", "logo", "minimalist"],
     likes: 124,
     comments: 18,
