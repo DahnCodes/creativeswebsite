@@ -4,14 +4,13 @@ import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 
 type Theme = "light" | "dark"
-type ColorMode = "default" | "purple" | "yellow" | "green" | "blue" | "red" | "orange"
+type ColorTheme = "default" | "purple" | "yellow" | "green" | "blue" | "red" | "orange"
 
 interface ThemeContextType {
   theme: Theme
-  colorMode: ColorMode
+  colorTheme: ColorTheme
   setTheme: (theme: Theme) => void
-  setColorMode: (colorMode: ColorMode) => void
-  toggleTheme: () => void
+  setColorTheme: (colorTheme: ColorTheme) => void
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -203,66 +202,47 @@ const colorModes = {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light")
-  const [colorMode, setColorMode] = useState<ColorMode>("default")
+  const [colorTheme, setColorTheme] = useState<ColorTheme>("default")
 
   useEffect(() => {
-    // Load saved theme and color mode
     const savedTheme = localStorage.getItem("theme") as Theme
-    const savedColorMode = localStorage.getItem("colorMode") as ColorMode
+    const savedColorTheme = localStorage.getItem("colorTheme") as ColorTheme
 
     if (savedTheme) {
       setTheme(savedTheme)
     }
 
-    if (savedColorMode) {
-      setColorMode(savedColorMode)
+    if (savedColorTheme) {
+      setColorTheme(savedColorTheme)
     }
   }, [])
 
   useEffect(() => {
-    // Apply theme to document
-    const root = document.documentElement
+    const root = window.document.documentElement
 
-    // Remove existing theme classes
+    // Remove all theme classes
     root.classList.remove("light", "dark")
+    root.classList.remove(
+      "theme-default",
+      "theme-purple",
+      "theme-yellow",
+      "theme-green",
+      "theme-blue",
+      "theme-red",
+      "theme-orange",
+    )
+
+    // Add current theme classes
     root.classList.add(theme)
-
-    // Apply color mode variables
-    const colors = colorModes[colorMode][theme]
-
-    Object.entries(colors).forEach(([key, value]) => {
-      root.style.setProperty(`--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`, value)
-    })
+    root.classList.add(`theme-${colorTheme}`)
 
     // Save to localStorage
     localStorage.setItem("theme", theme)
-    localStorage.setItem("colorMode", colorMode)
-  }, [theme, colorMode])
-
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light")
-  }
-
-  const handleSetTheme = (newTheme: Theme) => {
-    setTheme(newTheme)
-  }
-
-  const handleSetColorMode = (newColorMode: ColorMode) => {
-    setColorMode(newColorMode)
-  }
+    localStorage.setItem("colorTheme", colorTheme)
+  }, [theme, colorTheme])
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        colorMode,
-        setTheme: handleSetTheme,
-        setColorMode: handleSetColorMode,
-        toggleTheme,
-      }}
-    >
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={{ theme, colorTheme, setTheme, setColorTheme }}>{children}</ThemeContext.Provider>
   )
 }
 

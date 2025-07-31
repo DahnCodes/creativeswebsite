@@ -1,6 +1,4 @@
 "use client"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -11,7 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, Plus, User, Settings, LogOut, Heart, Bookmark, Palette } from "lucide-react"
+import { Search, Filter, Plus, Clock, TrendingUp, User, Settings, LogOut, Palette } from "lucide-react"
+import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { ThemeSelector } from "@/components/theme-selector"
 
@@ -24,12 +23,6 @@ interface HeaderProps {
 
 export function Header({ searchQuery = "", onSearchChange, onFilterChange, showSearch = true }: HeaderProps) {
   const { user, signOut } = useAuth()
-  const router = useRouter()
-
-  const handleSignOut = () => {
-    signOut()
-    router.push("/")
-  }
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -53,7 +46,7 @@ export function Header({ searchQuery = "", onSearchChange, onFilterChange, showS
             </div>
           )}
 
-          {onFilterChange && (
+          {showSearch && onFilterChange && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -61,8 +54,14 @@ export function Header({ searchQuery = "", onSearchChange, onFilterChange, showS
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onFilterChange("recent")}>Most Recent</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onFilterChange("popular")}>Most Popular</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onFilterChange("recent")}>
+                  <Clock className="mr-2 h-4 w-4" />
+                  Most Recent
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onFilterChange("popular")}>
+                  <TrendingUp className="mr-2 h-4 w-4" />
+                  Most Popular
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -100,38 +99,26 @@ export function Header({ searchQuery = "", onSearchChange, onFilterChange, showS
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile">
+                  <Link href="/profile">
+                    <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
                       Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/themes">
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/themes">
+                    <DropdownMenuItem>
                       <Palette className="mr-2 h-4 w-4" />
                       Themes
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile?tab=liked">
-                      <Heart className="mr-2 h-4 w-4" />
-                      Liked Posts
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile?tab=saved">
-                      <Bookmark className="mr-2 h-4 w-4" />
-                      Saved Posts
-                    </Link>
-                  </DropdownMenuItem>
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
+                  <DropdownMenuItem onClick={signOut}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
+                    Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
