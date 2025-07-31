@@ -10,7 +10,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
@@ -39,7 +39,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
-    --primary-foreground: 222.2 84% 4.9%;
+    --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
@@ -56,6 +56,84 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+
+  /* Purple Theme */
+  .theme-purple {
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 210 40% 98%;
+    --accent: 262.1 83.3% 57.8%;
+    --accent-foreground: 210 40% 98%;
+  }
+
+  .dark.theme-purple {
+    --primary: 263.4 70% 50.4%;
+    --accent: 263.4 70% 50.4%;
+  }
+
+  /* Yellow Theme */
+  .theme-yellow {
+    --primary: 47.9 95.8% 53.1%;
+    --primary-foreground: 26 83.3% 14.1%;
+    --accent: 47.9 95.8% 53.1%;
+    --accent-foreground: 26 83.3% 14.1%;
+  }
+
+  .dark.theme-yellow {
+    --primary: 47.9 95.8% 53.1%;
+    --accent: 47.9 95.8% 53.1%;
+  }
+
+  /* Green Theme */
+  .theme-green {
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --accent: 142.1 76.2% 36.3%;
+    --accent-foreground: 355.7 100% 97.3%;
+  }
+
+  .dark.theme-green {
+    --primary: 142.1 70.6% 45.3%;
+    --accent: 142.1 70.6% 45.3%;
+  }
+
+  /* Blue Theme */
+  .theme-blue {
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --accent: 221.2 83.2% 53.3%;
+    --accent-foreground: 210 40% 98%;
+  }
+
+  .dark.theme-blue {
+    --primary: 217.2 91.2% 59.8%;
+    --accent: 217.2 91.2% 59.8%;
+  }
+
+  /* Red Theme */
+  .theme-red {
+    --primary: 0 84.2% 60.2%;
+    --primary-foreground: 210 40% 98%;
+    --accent: 0 84.2% 60.2%;
+    --accent-foreground: 210 40% 98%;
+  }
+
+  .dark.theme-red {
+    --primary: 0 72.2% 50.6%;
+    --accent: 0 72.2% 50.6%;
+  }
+
+  /* Orange Theme */
+  .theme-orange {
+    --primary: 24.6 95% 53.1%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --accent: 24.6 95% 53.1%;
+    --accent-foreground: 60 9.1% 97.8%;
+  }
+
+  .dark.theme-orange {
+    --primary: 20.5 90.2% 48.2%;
+    --accent: 20.5 90.2% 48.2%;
   }
 }
 
@@ -96,42 +174,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Color mode specific styles */
-.color-mode-purple {
-  --gradient-from: 262.1 83.3% 57.8%;
-  --gradient-to: 270 3% 96%;
-}
-
-.color-mode-yellow {
-  --gradient-from: 47.9 95.8% 53.1%;
-  --gradient-to: 60 4.8% 95.9%;
-}
-
-.color-mode-green {
-  --gradient-from: 142.1 76.2% 36.3%;
-  --gradient-to: 138 11% 96%;
-}
-
-.color-mode-blue {
-  --gradient-from: 221.2 83.2% 53.3%;
-  --gradient-to: 220 14.3% 95.9%;
-}
-
-.color-mode-red {
-  --gradient-from: 0 72.2% 50.6%;
-  --gradient-to: 0 0% 96.1%;
-}
-
-.color-mode-orange {
-  --gradient-from: 24.6 95% 53.1%;
-  --gradient-to: 60 4.8% 95.9%;
-}
-
 /* Gradient backgrounds for hero sections */
 .hero-gradient {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--gradient-from, var(--primary))) 0%,
-    hsl(var(--gradient-to, var(--secondary))) 100%
-  );
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
 }

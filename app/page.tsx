@@ -10,6 +10,18 @@ import Link from "next/link"
 import { Header } from "@/components/header"
 import { useAuth } from "@/contexts/auth-context"
 
+// Mock user data for different post authors
+const mockUsers = {
+  "2": { name: "Sarah Chen", username: "sarahdesigns", avatar: "/placeholder.svg?height=40&width=40" },
+  "3": { name: "Alex Rivera", username: "alexphoto", avatar: "/placeholder.svg?height=40&width=40" },
+  "4": { name: "Maya Patel", username: "mayaillustrates", avatar: "/placeholder.svg?height=40&width=40" },
+  "5": { name: "David Kim", username: "davidarch", avatar: "/placeholder.svg?height=40&width=40" },
+  "6": { name: "Luna Martinez", username: "lunadigital", avatar: "/placeholder.svg?height=40&width=40" },
+  "7": { name: "Emma Thompson", username: "emmabotanical", avatar: "/placeholder.svg?height=40&width=40" },
+  "8": { name: "Ryan Foster", username: "ryanux", avatar: "/placeholder.svg?height=40&width=40" },
+  "9": { name: "Zoe Williams", username: "zoeportraits", avatar: "/placeholder.svg?height=40&width=40" },
+}
+
 export default function HomePage() {
   const { user, posts, toggleLike } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
@@ -111,90 +123,106 @@ export default function HomePage() {
               )}
             </div>
           ) : (
-            filteredPosts.map((post) => (
-              <Card key={post.id} className="overflow-hidden">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="cursor-pointer">
-                        <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-                        <AvatarFallback>U</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold cursor-pointer hover:underline">
-                          {post.userId === user?.id ? "You" : "Anonymous User"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{post.createdAt}</p>
+            filteredPosts.map((post) => {
+              const postUser =
+                post.userId === user?.id
+                  ? { name: "You", username: user.username, avatar: user.avatar }
+                  : mockUsers[post.userId as keyof typeof mockUsers] || {
+                      name: "Anonymous User",
+                      username: "anonymous",
+                      avatar: "/placeholder.svg?height=40&width=40",
+                    }
+
+              return (
+                <Card key={post.id} className="overflow-hidden">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="cursor-pointer">
+                          <AvatarImage src={postUser.avatar || "/placeholder.svg"} alt={postUser.name} />
+                          <AvatarFallback>
+                            {postUser.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold cursor-pointer hover:underline">{postUser.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            @{postUser.username} • {post.createdAt}
+                          </p>
+                        </div>
                       </div>
+                      {post.userId === user?.id && <Badge variant="secondary">Your Post</Badge>}
                     </div>
-                    {post.userId === user?.id && <Badge variant="secondary">Your Post</Badge>}
-                  </div>
-                </CardHeader>
+                  </CardHeader>
 
-                <CardContent className="pt-0">
-                  <div className="mb-4">
-                    <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
-                    <p className="text-muted-foreground">{post.description}</p>
-                  </div>
+                  <CardContent className="pt-0">
+                    <div className="mb-4">
+                      <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
+                      <p className="text-muted-foreground">{post.description}</p>
+                    </div>
 
-                  <div className="mb-4">
-                    <img
-                      src={post.image || "/placeholder.svg"}
-                      alt={post.title}
-                      className="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
-                      onClick={() => {
-                        window.open(post.image, "_blank")
-                      }}
-                    />
-                  </div>
+                    <div className="mb-4">
+                      <img
+                        src={post.image || "/placeholder.svg"}
+                        alt={post.title}
+                        className="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
+                        onClick={() => {
+                          window.open(post.image, "_blank")
+                        }}
+                      />
+                    </div>
 
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {post.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="cursor-pointer hover:bg-secondary/80"
-                        onClick={() => setSearchQuery(tag)}
-                      >
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {post.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-secondary/80"
+                          onClick={() => setSearchQuery(tag)}
+                        >
+                          #{tag}
+                        </Badge>
+                      ))}
+                    </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`text-muted-foreground hover:text-red-500 ${post.isLiked ? "text-red-500" : ""}`}
+                          onClick={() => toggleLike(post.id)}
+                          disabled={!user}
+                        >
+                          <Heart className={`h-4 w-4 mr-1 ${post.isLiked ? "fill-current" : ""}`} />
+                          {post.likes}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-muted-foreground hover:text-blue-500"
+                          onClick={() => alert("Comments feature coming soon!")}
+                        >
+                          <MessageCircle className="h-4 w-4 mr-1" />
+                          {post.comments}
+                        </Button>
+                      </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`text-muted-foreground hover:text-red-500 ${post.isLiked ? "text-red-500" : ""}`}
-                        onClick={() => toggleLike(post.id)}
-                        disabled={!user}
+                        className="text-muted-foreground hover:text-green-500"
+                        onClick={() => handleShare(post)}
                       >
-                        <Heart className={`h-4 w-4 mr-1 ${post.isLiked ? "fill-current" : ""}`} />
-                        {post.likes}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-muted-foreground hover:text-blue-500"
-                        onClick={() => alert("Comments feature coming soon!")}
-                      >
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        {post.comments}
+                        <Share2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-muted-foreground hover:text-green-500"
-                      onClick={() => handleShare(post)}
-                    >
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                  </CardContent>
+                </Card>
+              )
+            })
           )}
         </div>
       </main>

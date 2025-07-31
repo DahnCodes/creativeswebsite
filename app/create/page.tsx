@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -33,6 +33,7 @@ export default function CreatePage() {
   })
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [filePreviewUrls, setFilePreviewUrls] = useState<string[]>([])
   const [tagList, setTagList] = useState<string[]>([])
 
   // Redirect if not authenticated
@@ -54,12 +55,27 @@ export default function CreatePage() {
         alert("Some files were skipped. Only images and videos under 10MB are allowed.")
       }
 
+      // Create preview URLs for the new files
+      const newPreviewUrls = validFiles.map((file) => {
+        if (file.type.startsWith("image/")) {
+          return URL.createObjectURL(file)
+        }
+        return "/placeholder.svg?height=200&width=300"
+      })
+
       setSelectedFiles((prev) => [...prev, ...validFiles])
+      setFilePreviewUrls((prev) => [...prev, ...newPreviewUrls])
     }
   }
 
   const removeFile = (index: number) => {
+    // Revoke the object URL to free memory
+    if (filePreviewUrls[index] && filePreviewUrls[index].startsWith("blob:")) {
+      URL.revokeObjectURL(filePreviewUrls[index])
+    }
+
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
+    setFilePreviewUrls((prev) => prev.filter((_, i) => i !== index))
   }
 
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -96,11 +112,14 @@ export default function CreatePage() {
       // Simulate file upload
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      // Add post to context
+      // Use the first uploaded image as the main image
+      const mainImageUrl = filePreviewUrls[0] || "/placeholder.svg?height=400&width=600"
+
+      // Add post to context with the actual uploaded image
       addPost({
         title: postData.title,
         description: postData.description,
-        image: "/placeholder.svg?height=400&width=600", // In real app, this would be the uploaded file URL
+        image: mainImageUrl,
         tags: tagList,
         category: postData.category,
         isDraft: postData.isDraft,
@@ -132,12 +151,17 @@ export default function CreatePage() {
     return <FileText className="h-4 w-4" />
   }
 
-  const getFilePreview = (file: File) => {
-    if (file.type.startsWith("image/")) {
-      return URL.createObjectURL(file)
+  // Clean up object URLs when component unmounts
+  const useEffect = React.useEffect
+  useEffect(() => {
+    return () => {
+      filePreviewUrls.forEach((url) => {
+        if (url.startsWith("blob:")) {
+          URL.revokeObjectURL(url)
+        }
+      })
     }
-    return "/placeholder.svg?height=200&width=300"
-  }
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -223,9 +247,9 @@ export default function CreatePage() {
                               <X className="h-4 w-4" />
                             </Button>
                           </div>
-                          {file.type.startsWith("image/") && (
+                          {file.type.startsWith("image/") && filePreviewUrls[index] && (
                             <img
-                              src={getFilePreview(file) || "/placeholder.svg"}
+                              src={filePreviewUrls[index] || "/placeholder.svg"}
                               alt={file.name}
                               className="w-full h-32 object-cover rounded"
                             />
@@ -352,21 +376,19 @@ export default function CreatePage() {
               {postData.description && <p className="text-muted-foreground mt-2">{postData.description}</p>}
             </div>
 
-            {selectedFiles.length > 0 && (
+            {filePreviewUrls.length > 0 && (
               <div className="grid grid-cols-1 gap-4">
-                {selectedFiles.slice(0, 3).map((file, index) => (
+                {filePreviewUrls.slice(0, 3).map((url, index) => (
                   <div key={index}>
-                    {file.type.startsWith("image/") && (
-                      <img
-                        src={getFilePreview(file) || "/placeholder.svg"}
-                        alt={file.name}
-                        className="w-full h-64 object-cover rounded-lg"
-                      />
-                    )}
+                    <img
+                      src={url || "/placeholder.svg"}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-64 object-cover rounded-lg"
+                    />
                   </div>
                 ))}
-                {selectedFiles.length > 3 && (
-                  <p className="text-sm text-muted-foreground">+{selectedFiles.length - 3} more files</p>
+                {filePreviewUrls.length > 3 && (
+                  <p className="text-sm text-muted-foreground">+{filePreviewUrls.length - 3} more files</p>
                 )}
               </div>
             )}
